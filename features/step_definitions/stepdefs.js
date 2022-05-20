@@ -1,30 +1,34 @@
 const assert = require('assert');
 const { Given, When, Then } = require('@cucumber/cucumber');
 
-function isItFriday(today) {
-  if (today === "Friday") {
-    return "TGIF";
-  } else {
-    return "Nope";
+function transfer(sender, receiver) {
+  if (sender.balance > 0) {
+    sender.balance--;
+    receiver.balance++;
   }
 }
 
-Given('today is Friday', function () {
-  this.today = 'Friday';
+Given('{string} balance is {int}', function (id, balance) {
+  this[id] = {
+    balance,
+  };
 });
 
-Given('today is Sunday', function () {
+When('{string} Identifies with {string}', function (sender, receiver) {
   // Write code here that turns the phrase above into concrete actions
-  this.today = 'Sunday';
+  transfer(this[sender], this[receiver]);
 });
 
-When('I ask whether it\'s Friday yet', function () {
+Then("{string} new balance is {int} and {string} new balance is {int}", function (receiver_id, receiver_balance, sender_id, sender_balance) {
   // Write code here that turns the phrase above into concrete actions
-  this.actualAnswer = isItFriday(this.today);
-});
 
-Then('I should be told {string}', function (expectedAnswer) {
-  // Write code here that turns the phrase above into concrete actions
-  assert.strictEqual(this.actualAnswer, expectedAnswer);
+  // console.log("this:")
+  // console.log(this)
+
+  const sender = this[sender_id];
+  const receiver = this[receiver_id];
+
+  assert.strictEqual(sender.balance, sender_balance);
+  assert.strictEqual(receiver.balance, receiver_balance);  
 });
 
